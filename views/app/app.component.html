@@ -1,7 +1,21 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    {{title}}
-  </h1>
+<div class="container-fluid">
+  <div class="row">
+    <h1>
+      {{title}}
+    </h1>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 col-lg-6">
+      <table class="table table-bordered">
+        <thead></thead>
+        <tbody>
+          <tr *ngFor="let r of rowsCount">
+            <td *ngFor="let c of colsCount">
+              <button type="button" class="btn">{{r}}-{{c}}</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
-

@@ -1,2 +1,2 @@
-# battleship
+# Battleship
 Find the ships
