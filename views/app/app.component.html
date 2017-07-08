@@ -1,7 +1,28 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    {{title}}
-  </h1>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col"><h1>
+      {{title}}</h1></div>
+  </div>
+  <div class="row">
+    <div class="col-xs-8 col-lg-4">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th></th>
+            <th *ngFor="let header of [1,2,3,4,5,6,7,8,9,10]">
+              {{header}}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']">
+            <td>{{r}}</td>
+            <td *ngFor="let col of [1,2,3,4,5,6,7,8,9,10]" style="background-color: grey; width: 10rem; height: 1rem"
+                (click)="selectCell(r, col)">
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
-

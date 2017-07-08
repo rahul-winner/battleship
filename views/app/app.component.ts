@@ -7,4 +7,8 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'Battleship';
+
+  selectCell(row, col) {
+    console.log('cell = ' + row + col);
+  }
 }
