@@ -49,4 +49,6 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+var ships = require('./ships');
+ships.init();
 module.exports = app;
