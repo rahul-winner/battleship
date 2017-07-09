@@ -10,13 +10,13 @@ export class MarkDirective implements OnChanges {
     @Input() row: string;
     @Input() col: string;
     @Input() shipsKnownLocations: Array<any> = [];
+    @Input() readonly = false;
+
+    private isHit = false;
+    private isShot = false;
+
     constructor(private el: ElementRef, private shipService: ShipService) {
-        const cellLoc = this.row + this.col;
-
         this.el.nativeElement.style.backgroundColor = 'grey';
-
-        const cell = new Cell(cellLoc, 'grey');
-        this.shipService.addCell(cell);
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -31,17 +31,32 @@ export class MarkDirective implements OnChanges {
                 }
             });
             if (isShipPresent) {
-                this.el.nativeElement.style.backgroundColor = 'yellow';
+                if (this.isHit) {
+                    this.el.nativeElement.style.backgroundColor = 'green';
+                } else {
+                    this.el.nativeElement.style.backgroundColor = 'yellow';
+                }
             } else {
-                this.el.nativeElement.style.backgroundColor = 'grey';
+                if (!this.isShot) {
+                    this.el.nativeElement.style.backgroundColor = 'grey';
+                }
             }
+        }
+
+        if (changes['readonly'] && !this.readonly) {
+            this.el.nativeElement.style.backgroundColor = 'grey';
         }
     }
 
     @HostListener('click', ['$event']) onMouseClick() {
+        if (this.shipService.isReadOnly()) {
+            return;
+        }
         this.shipService.hitLocation(this.row + this.col).subscribe(res => {
             const hitOrMiss = res['hitOrMiss'];
+            this.isShot = true;
             if (hitOrMiss) {
+                this.isHit = true;
                 this.highlight('blue');
             } else {
                 this.highlight('red');

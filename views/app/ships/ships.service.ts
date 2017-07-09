@@ -8,6 +8,7 @@ import { Cell } from './cell.model';
 export class ShipService {
 
     boardCells: Array<Cell> = [];
+    private readonly = false;
 
     constructor(private http: Http) {
 
@@ -15,6 +16,10 @@ export class ShipService {
 
     addCell(cell: Cell) {
         this.boardCells.push(cell);
+    }
+
+    isReadOnly (): boolean {
+        return this.readonly;
     }
 
     hitLocation(coordinate: string): Observable<any> {
@@ -26,12 +31,14 @@ export class ShipService {
     startNew(): Observable<any> {
         return this.http.get('/api/new').map(res => {
             this.boardCells = [];
+            this.readonly = false;
             return res.json();
         })
     }
 
     looseGameAndGetShips(): Observable<any> {
         return this.http.get('/api/loose').map(res => {
+            this.readonly = true;
             return res.json();
         })
     }
