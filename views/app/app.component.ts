@@ -9,17 +9,16 @@ import { ShipService } from './ships/ships.service';
 })
 export class AppComponent implements OnDestroy {
   title = 'Battleship';
+  hit = true;
+
   private subscriptionsList: Array<Subscription> = [];
   constructor(private shipService: ShipService) {
 
   }
 
-  selectCell(row, col) {
-    const coordinate: string = row + col;
-    console.log('cell = ' + row + col);
-    this.subscriptionsList.push(this.shipService.hitLocation(coordinate).subscribe((res) => {
-      console.log(res);
-    }));
+  isHitOrMiss(row, col) {
+    this.hit = !this.hit;
+    return this.hit;
   }
 
   ngOnDestroy(): void {

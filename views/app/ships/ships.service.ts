@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { Response, Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 
@@ -9,9 +9,9 @@ export class ShipService {
 
     }
 
-    hitLocation(coordinate: string): Observable<boolean> {
-        return this.http.get('/api').map(res => {
-            return true;
+    hitLocation(coordinate: string): Observable<any> {
+        return this.http.get('/api?coordinate=' + coordinate).map((res: Response) => {
+            return res.json();
         });
     }
 }

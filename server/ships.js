@@ -23,4 +23,14 @@ ships.init = function () {
         console.log("initialized..");
     });
 };
+
+ships.isHit = function (coordinate) {
+    console.log("hit check coordinate = "+JSON.stringify(coordinate));
+    if (coordinate === "G7" || coordinate === "G8") {
+        return true;
+    } else {
+        return false;
+    }
+};
+
 module.exports = ships;
