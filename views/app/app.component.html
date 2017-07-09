@@ -4,6 +4,14 @@
       {{title}}</h1></div>
   </div>
   <div class="row">
+    <div class="col-xs-4">
+      <div style="display:flex">
+        <div><button type="button" (click)="startNewGame()" class="btn">New Game</button></div>
+        <div><button type="button" (click)="looseGame()" class="btn" style="margin-left:2rem">I Loose</button></div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
     <div class="col-xs-8 col-lg-4">
       <table class="table table-bordered">
         <thead>
@@ -21,8 +29,8 @@
                 appMark
                 [row]="r"
                 [col]="col"
-                [style.background-color]="isHitOrMiss(r, col)"
-                style="background-color: grey; width: 10rem; height: 1rem">
+                [shipsKnownLocations]="shipsData"
+                class="board-cell">
             </td>
           </tr>
         </tbody>
