@@ -1,35 +1,40 @@
 const ships = {};
 const fs = require('fs');
+
 const _ = require('lodash');
+
+var Ship = function (name_, locations_) {
+    this.name = name_;
+    this.locations = locations_;
+};
+
 const ALPHABETS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 var boardHeight = 10;
 var boardWidth = 10;
-
-var shipsLocations = [];
 
 var carrierSize = 5;
 var battleshipSize = 4;
 var submarineSize = 3;
 var patrolSize = 2;
 
-const initData = {
-    carrier: {
+var shipsLocations = [];
+var shipsData = [];
 
-    },
-    battleShip: {
+ships.getShipsData = function () {
+    return shipsData;
+};
 
-    },
-    submarine: {
+ships.getShipsLocations = function () {
+    var oldShipsLocations = shipsLocations;
+    this.newGame();
+    return oldShipsLocations;
+};
 
-    },
-    patrol: {
-
-    }
-}
 ships.init = function () {
     console.log("initializing ships..");
+    shipsData = [];
     this.newGame();
-    fs.writeFile('./server/data/first.json', JSON.stringify(initData), function (err) {
+    fs.writeFile('./server/data/first.json', JSON.stringify(shipsData), function (err) {
         if (err) {
             return console.log(err);
         }
@@ -49,33 +54,33 @@ ships.isHit = function (coordinate) {
 ships.newGame = function () {
     var locations = [];
     var carrierLoc = [1, 2, 3, 4, 5];
-    //carrierLoc = Math.floor((Math.random() * 100) + 1);
+    carrierLoc = placeShip(locations, 5);
+    var carrierShip = new Ship('Carrier', carrierLoc);
+    shipsData.push(carrierShip);
     carrierLoc.forEach(p => {
         locations.push(p);
-    });     
+    });
 
     var battleshipLoc = [11, 12, 13, 14];
-    // while (battleshipLoc === 0 || _.findIndex(locations, battleshipLoc) > -1) {
-    //     battleshipLoc = Math.floor((Math.random() * 100) + 1);
-    // }
+    battleshipLoc = placeShip(locations, 4);
+    var battleship = new Ship('Battleship', battleshipLoc);
+    shipsData.push(battleship);
     battleshipLoc.forEach(p => {
         locations.push(p);
-    });    
+    });
 
     var submarineLoc = [21, 22, 23];
-    // while (submarineLoc === 0 || _.findIndex(locations, submarineLoc) > -1) {
-    //     submarineLoc = Math.floor((Math.random() * 100) + 1);
-    //     console.log('submarineLoc = ' + submarineLoc);
-    // }
+    submarineLoc = placeShip(locations, 3);
+    var submarine = new Ship('Submarine', submarineLoc);
+    shipsData.push(submarine);
     submarineLoc.forEach(p => {
         locations.push(p);
     });
 
     var patrolLoc = [31, 32];
-    // while (patrolLoc === 0 || _.findIndex(locations, patrolLoc) > -1) {
-    //     patrolLoc = Math.floor((Math.random() * 100) + 1);
-    // }
-    // var patrolLocs = placeShip(patrolLoc, 2);
+    patrolLocs = placeShip(patrolLoc, 2);
+    var patrol = new Ship('Patrol', patrolLocs);
+    shipsData.push(patrol);
     patrolLoc.forEach(p => {
         locations.push(p);
     });
@@ -89,35 +94,89 @@ ships.newGame = function () {
 };
 
 convertToString = function (locNumber) {
-    var m = locNumber / 10;
-    var n = locNumber % 10;
+    var m = locNumber / boardWidth;
+    var n = locNumber % boardWidth;
+    n = Math.floor(n);
+    if (n === 0) {
+        n = boardWidth;
+        m = m - 1;
+    }
     var locStr = "" + ALPHABETS.charAt(m) + n;
     return locStr;
-}
+};
 
-ships.placeShip = function (location, size) {
+var downDirFlag = true;
+var rightDirFlag = true;
 
+placeShip = function (reservedLocations, size) {
+    console.log("placing ship of size = " + size);
+    if (size > boardHeight || size > boardWidth) {
+        throw error;
+    }
+
+    var location = Math.floor((Math.random() * 100) + 1);
+    console.log("location = " + location);
     var heightOffset = location / boardHeight;
     var widthOffset = location / boardWidth;
 
-    var randomDir = Math.floor((Math.random() * 10) + 1);
-    var locations = [location];
-    randomDir = randomDir / 4;
-    switch (randomDir) {
-        case 0:
-            for (var i = 1; i < size; i++) {
-                locations.push(location + i);
-            }
-            break;
-        case 1:
-            for (var j = 1; j < size; j++) {
-                locations.push(location - j);
-            }
-            break;
-        case 2:
-        case 3:
+    var row = location / boardWidth;
+    var col = location % boardWidth;
+    if (col === 0) {
+        col = boardWidth;
+    } else {
+        row = row + 1;
     }
-    return randomDir;
+
+    row = Math.trunc(row);
+    console.log("row = " + row);
+    console.log("col = " + col);
+    var selectedStep = 1;
+    var possibleDir = [];
+    if ((size + row) > boardHeight) {
+        possibleDir.push("UP");
+    }
+    if ((size + col) > boardWidth) {
+        possibleDir.push("LEFT");
+    }
+    console.log("possibleDir = " + JSON.stringify(possibleDir));
+    if (possibleDir.length === 0) {
+        if (downDirFlag) { //go down
+            selectedStep = boardWidth;
+            downDirFlag = false;
+        } else { // go right
+            selectedStep = 1;
+            rightDirFlag = false;
+        }
+    } else {
+        if (possibleDir.indexOf("LEFT") > -1) {
+            if (!rightDirFlag) {
+                selectedStep = -1;
+                rightDirFlag = true;
+            } else if (possibleDir.indexOf("UP") > -1 && !downDirFlag) {
+                selectedStep = - boardWidth;
+                downDirFlag = true;
+            } else {
+                selectedStep = -1;
+                rightDirFlag = true;
+            }
+        } else if (possibleDir.indexOf("UP") > -1) { //it means LEFT is not allowed
+            if (!downDirFlag) {
+                selectedStep = - boardWidth;
+                downDirFlag = true;
+            } else {
+                selectedStep = 1;
+                rightDirFlag = false;
+            }
+        }
+    }
+
+    var myLocations = [];
+    myLocations.push(location);
+    for (var count = 1; count < size; count++) {
+        myLocations.push(location + (selectedStep * count));
+    }
+    console.log("pushed locations = " + myLocations);
+    return myLocations;
 }
 
 module.exports = ships;

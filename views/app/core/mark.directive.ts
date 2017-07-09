@@ -8,7 +8,16 @@ export class MarkDirective {
 
     @Input() row: string;
     @Input() col: string;
-    constructor(private el: ElementRef, private shipService: ShipService) { }
+    @Input() shipsKnownLocations: Array<any> = [];
+    constructor(private el: ElementRef, private shipService: ShipService) {
+        const cellLoc = this.row + this.col;
+        const isShipPresent = this.shipsKnownLocations.filter(loc => {
+            return loc === cellLoc;
+        });
+        if (isShipPresent) {
+            this.el.nativeElement.style.backgroundColor = 'yellow';
+        }
+    }
 
     @HostListener('click', ['$event']) onMouseClick() {
         this.shipService.hitLocation(this.row + this.col).subscribe(res => {

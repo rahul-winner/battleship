@@ -16,7 +16,8 @@ router.get('/new', function(req, res, next) {
 });
 
 router.get('/loose', function(req, res, next) {
-  res.json({carrier: {}, patrol: {}, battleship: {}, submarine: {}});
+  //res.json(ships.getShipsData());
+  res.json(ships.getShipsLocations());
 });
 
 module.exports = router;

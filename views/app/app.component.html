@@ -7,7 +7,7 @@
     <div class="col-xs-4">
       <div style="display:flex">
         <div><button type="button" (click)="startNewGame()" class="btn">New Game</button></div>
-        <div><button type="button" class="btn" style="margin-left:2rem">I Loose</button></div>
+        <div><button type="button" (click)="looseGame()" class="btn" style="margin-left:2rem">I Loose</button></div>
       </div>
     </div>
   </div>
@@ -29,7 +29,9 @@
                 appMark
                 [row]="r"
                 [col]="col"
-                style="background-color: grey; width: 10rem; height: 1rem">
+                [shipsKnownLocations]="shipsData"
+                class="board-cell"
+                [style.background-color]= "getColor(r,col)" >
             </td>
           </tr>
         </tbody>

@@ -20,4 +20,10 @@ export class ShipService {
             return res.json();
         })
     }
+
+    looseGameAndGetShips(): Observable<any> {
+        return this.http.get('/api/loose').map(res => {
+            return res.json();
+        })
+    }
 }

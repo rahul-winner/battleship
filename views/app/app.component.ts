@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 import { ShipService } from './ships/ships.service';
 
@@ -9,8 +9,13 @@ import { ShipService } from './ships/ships.service';
 })
 export class AppComponent implements OnDestroy {
   title = 'Battleship';
+
+  boardWidth = 10;
+  boardHeight = 10;
+  shipsData: any;
+
   private subscriptionsList: Array<Subscription> = [];
-  constructor(private shipService: ShipService) {
+  constructor(private shipService: ShipService, private changeDetectionRef: ChangeDetectorRef) {
 
   }
 
@@ -25,4 +30,21 @@ export class AppComponent implements OnDestroy {
       return res;
     }));
   }
+
+
+  looseGame() {
+    this.subscriptionsList.push(this.shipService.looseGameAndGetShips().subscribe(res => {
+      this.shipsData = res;
+      this.changeDetectionRef.markForCheck();
+    }));
+  }
+
+  getColor(row, cell) {
+    return 'black';
+  }
+}
+
+export class Cell {
+  index: number;
+  color: string;
 }
