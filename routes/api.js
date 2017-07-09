@@ -10,7 +10,7 @@ router.get('/hit', function(req, res, next) {
 });
 
 router.get('/new', function(req, res, next) {
-  ships.new();
+  ships.newGame();
   res.json({});
   res.status(201);
 });
