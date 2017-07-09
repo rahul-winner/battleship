@@ -6,7 +6,7 @@ router.get('/hit', function (req, res, next) {
   var coordinate = req.query.coordinate;
   var gameId = req.query.gameId;
   ships.isHit(gameId, coordinate, function (err, isHitOrMiss) {
-    res.json({ hitOrMiss: isHitOrMiss });
+    res.json(isHitOrMiss);
   });
 });
 
@@ -17,8 +17,8 @@ router.get('/new', function (req, res, next) {
 
 router.get('/loose', (req, res, next) => {
   var gameId = req.query.gameId;
-  ships.getShipsLocations(gameId, function (err, locations) {
-    res.json(locations);
+  ships.getShipsLocations(gameId, function (err, data) {
+    res.json(data.locations);
   });
 });
 

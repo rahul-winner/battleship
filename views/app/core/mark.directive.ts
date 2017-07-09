@@ -56,6 +56,12 @@ export class MarkDirective implements OnChanges {
         }
         this.shipService.hitLocation(this.row + this.col).subscribe(res => {
             const hitOrMiss = res['hitOrMiss'];
+            const isWon = res['win'];
+            if (isWon) {
+                this.shipService.setWonFlag(true);
+            } else {
+                this.shipService.setWonFlag(false);
+            }
             this.isShot = true;
             if (hitOrMiss) {
                 this.isHit = true;

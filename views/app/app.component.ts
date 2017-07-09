@@ -15,10 +15,11 @@ export class AppComponent implements OnInit, OnDestroy {
   boardHeight = 10;
   shipsData: any;
   readonly = true;
+  win = false;
 
   private subscriptionsList: Array<Subscription> = [];
   constructor(private shipService: ShipService, private changeDetectionRef: ChangeDetectorRef) {
-
+    this.win = this.shipService.getWonFlag();
   }
 
   ngOnInit(): void {
@@ -47,7 +48,4 @@ export class AppComponent implements OnInit, OnDestroy {
     }));
   }
 
-  getColor(row, cell) {
-    return 'black';
-  }
 }
