@@ -38,6 +38,8 @@ export class MarkDirective implements OnChanges {
                 }
             } else {
                 if (!this.isShot) {
+                    this.isShot = false;
+                    this.isHit = false;
                     this.el.nativeElement.style.backgroundColor = 'grey';
                 }
             }

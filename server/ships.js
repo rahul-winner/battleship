@@ -4,8 +4,10 @@ const fs = require('fs');
 const _ = require('lodash');
 
 var Ship = function (name_, locations_) {
-    this.name = name_;
-    this.locations = locations_;
+    return {
+        name : name_,
+        locations : locations_
+    };
 };
 
 const ALPHABETS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -17,41 +19,31 @@ var battleshipSize = 4;
 var submarineSize = 3;
 var patrolSize = 2;
 
-var shipsLocations = [];
-var shipsData = [];
-
-ships.getShipsData = function () {
-    return shipsData;
-};
-
-ships.getShipsLocations = function () {
-    var oldShipsLocations = shipsLocations;
-    this.newGame();
-    return oldShipsLocations;
-};
-
-ships.init = function () {
-    console.log("initializing ships..");
-    shipsData = [];
-    this.newGame();
-    fs.writeFile('./server/data/first.json', JSON.stringify(shipsData), function (err) {
-        if (err) {
-            return console.log(err);
+ships.getShipsLocations = function (gameId, callback) {
+    fs.readFile('./server/data/' + gameId + '.json', function (err, data) {
+        if (data) {
+            var parsedData = JSON.parse(data.toString());
+            if (parsedData) {
+                callback(err, parsedData.locations);
+            }
         }
-        console.log("initialized..    " + shipsLocations);
     });
 };
 
-ships.isHit = function (coordinate) {
-    console.log("hit check coordinate = " + JSON.stringify(coordinate));
-    if (_.indexOf(shipsLocations, coordinate) > -1) {
-        return true;
-    } else {
-        return false;
-    }
+ships.isHit = function (gameId, coordinate, callback) {
+    this.getShipsLocations(gameId, function (err, myGameLocations) {
+        if (_.indexOf(myGameLocations, coordinate) > -1) {
+            callback(err, true);
+        } else {
+            callback(err, false);
+        }
+    });
 };
 
 ships.newGame = function () {
+    console.log("\nstarting a new game...........");
+    var shipsData = [];
+    var gameId = Math.floor((Math.random() * 100000) + 1);
     var locations = [];
     var carrierLoc = [1, 2, 3, 4, 5];
     carrierLoc = placeShip(locations, 5);
@@ -89,8 +81,22 @@ ships.newGame = function () {
     locations.forEach(loc => {
         shipsLocations.push(convertToString(loc));
     });
+    this.saveGame(gameId, shipsLocations, shipsData);
+    return gameId;
+};
 
-    return locations;
+ships.saveGame = function (gameId, locations, shipsData) {
+    var data = {
+        gameId: gameId,
+        locations: locations,
+        shipsWithLocations: shipsData
+    };
+    fs.writeFile('./server/data/' + gameId + '.json', JSON.stringify(data), function (err) {
+        if (err) {
+            return console.log(err);
+        }
+        console.log("initialized..    " + shipsLocations);
+    });
 };
 
 convertToString = function (locNumber) {
@@ -115,7 +121,7 @@ placeShip = function (reservedLocations, size) {
     }
 
     var location = Math.floor((Math.random() * 100) + 1);
-    console.log("location = " + location);
+
     var heightOffset = location / boardHeight;
     var widthOffset = location / boardWidth;
 
@@ -128,8 +134,6 @@ placeShip = function (reservedLocations, size) {
     }
 
     row = Math.trunc(row);
-    console.log("row = " + row);
-    console.log("col = " + col);
     var selectedStep = 1;
     var possibleDir = [];
     if ((size + row) > boardHeight) {
@@ -138,7 +142,7 @@ placeShip = function (reservedLocations, size) {
     if ((size + col) > boardWidth) {
         possibleDir.push("LEFT");
     }
-    console.log("possibleDir = " + JSON.stringify(possibleDir));
+
     if (possibleDir.length === 0) {
         if (downDirFlag) { //go down
             selectedStep = boardWidth;
@@ -175,8 +179,18 @@ placeShip = function (reservedLocations, size) {
     for (var count = 1; count < size; count++) {
         myLocations.push(location + (selectedStep * count));
     }
+    let locationOverlap = false;
+    myLocations.forEach(loc => {
+        if (_.indexOf(reservedLocations, loc) > -1 && !locationOverlap) {
+            locationOverlap = true;
+        }
+    });
+    if (locationOverlap) {
+        console.log("retrying....");
+        myLocations = placeShip(reservedLocations, size);
+    }
     console.log("pushed locations = " + myLocations);
     return myLocations;
-}
+};
 
 module.exports = ships;

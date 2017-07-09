@@ -8,7 +8,7 @@ import { Cell } from './cell.model';
 export class ShipService {
 
     boardCells: Array<Cell> = [];
-    private readonly = false;
+    private readonly = true;
 
     constructor(private http: Http) {
 
@@ -18,27 +18,33 @@ export class ShipService {
         this.boardCells.push(cell);
     }
 
-    isReadOnly (): boolean {
+    isReadOnly(): boolean {
         return this.readonly;
-    }
-
-    hitLocation(coordinate: string): Observable<any> {
-        return this.http.get('/api/hit?coordinate=' + coordinate).map((res: Response) => {
-            return res.json();
-        });
     }
 
     startNew(): Observable<any> {
         return this.http.get('/api/new').map(res => {
             this.boardCells = [];
             this.readonly = false;
-            return res.json();
+            const gameResponse = res.json();
+            const gameId = gameResponse.gameId;
+            sessionStorage.setItem('battleship', gameId);
+            return gameResponse;
         })
     }
 
+    hitLocation(coordinate: string): Observable<any> {
+        const gameId = sessionStorage.getItem('battleship');
+        return this.http.get('/api/hit?coordinate=' + coordinate + '&gameId=' + gameId).map((res: Response) => {
+            return res.json();
+        });
+    }
+
     looseGameAndGetShips(): Observable<any> {
-        return this.http.get('/api/loose').map(res => {
+        const gameId = sessionStorage.getItem('battleship');
+        return this.http.get('/api/loose?gameId=' + gameId).map(res => {
             this.readonly = true;
+            sessionStorage.removeItem('battleship');
             return res.json();
         })
     }
