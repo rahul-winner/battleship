@@ -32,6 +32,4 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
-var ships = require('./ships');
-ships.init();
 module.exports = app;

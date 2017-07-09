@@ -1,4 +1,4 @@
-import { Component, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectorRef, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 import { ShipService } from './ships/ships.service';
 
@@ -7,17 +7,22 @@ import { ShipService } from './ships/ships.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnDestroy {
+export class AppComponent implements OnInit, OnDestroy {
+
   title = 'Find the Ships';
 
   boardWidth = 10;
   boardHeight = 10;
   shipsData: any;
-  readonly = false;
+  readonly = true;
 
   private subscriptionsList: Array<Subscription> = [];
   constructor(private shipService: ShipService, private changeDetectionRef: ChangeDetectorRef) {
-    this.readonly = this.shipService.isReadOnly();
+
+  }
+
+  ngOnInit(): void {
+    this.startNewGame();
   }
 
   ngOnDestroy(): void {
@@ -27,6 +32,7 @@ export class AppComponent implements OnDestroy {
   }
 
   startNewGame() {
+    this.readonly = true;
     this.subscriptionsList.push(this.shipService.startNew().subscribe(res => {
       this.readonly = false;
       this.shipsData = [];
