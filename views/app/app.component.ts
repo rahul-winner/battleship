@@ -27,24 +27,18 @@ export class AppComponent implements OnDestroy {
 
   startNewGame() {
     this.subscriptionsList.push(this.shipService.startNew().subscribe(res => {
+      this.shipsData = [];
       return res;
     }));
   }
 
-
   looseGame() {
     this.subscriptionsList.push(this.shipService.looseGameAndGetShips().subscribe(res => {
       this.shipsData = res;
-      this.changeDetectionRef.markForCheck();
     }));
   }
 
   getColor(row, cell) {
     return 'black';
   }
-}
-
-export class Cell {
-  index: number;
-  color: string;
 }
