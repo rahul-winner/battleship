@@ -10,8 +10,14 @@ export class ShipService {
     }
 
     hitLocation(coordinate: string): Observable<any> {
-        return this.http.get('/api?coordinate=' + coordinate).map((res: Response) => {
+        return this.http.get('/api/hit?coordinate=' + coordinate).map((res: Response) => {
             return res.json();
         });
+    }
+
+    startNew(): Observable<any> {
+        return this.http.get('/api/new').map(res => {
+            return res.json();
+        })
     }
 }

@@ -9,21 +9,20 @@ import { ShipService } from './ships/ships.service';
 })
 export class AppComponent implements OnDestroy {
   title = 'Battleship';
-  hit = true;
-
   private subscriptionsList: Array<Subscription> = [];
   constructor(private shipService: ShipService) {
 
-  }
-
-  isHitOrMiss(row, col) {
-    this.hit = !this.hit;
-    return this.hit;
   }
 
   ngOnDestroy(): void {
     this.subscriptionsList.forEach(subscription => {
       subscription.unsubscribe();
     });
+  }
+
+  startNewGame() {
+    this.subscriptionsList.push(this.shipService.startNew().subscribe(res => {
+      return res;
+    }));
   }
 }
