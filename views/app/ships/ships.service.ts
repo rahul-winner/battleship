@@ -7,15 +7,11 @@ import { Cell } from './cell.model';
 @Injectable()
 export class ShipService {
 
-    boardCells: Array<Cell> = [];
     private readonly = true;
+    private win = false;
 
     constructor(private http: Http) {
 
-    }
-
-    addCell(cell: Cell) {
-        this.boardCells.push(cell);
     }
 
     isReadOnly(): boolean {
@@ -24,7 +20,6 @@ export class ShipService {
 
     startNew(): Observable<any> {
         return this.http.get('/api/new').map(res => {
-            this.boardCells = [];
             this.readonly = false;
             const gameResponse = res.json();
             const gameId = gameResponse.gameId;
@@ -38,6 +33,14 @@ export class ShipService {
         return this.http.get('/api/hit?coordinate=' + coordinate + '&gameId=' + gameId).map((res: Response) => {
             return res.json();
         });
+    }
+
+    getWonFlag() {
+        return this.win;
+    }
+
+    setWonFlag(flag) {
+        this.win = flag;
     }
 
     looseGameAndGetShips(): Observable<any> {

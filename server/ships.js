@@ -24,19 +24,43 @@ ships.getShipsLocations = function (gameId, callback) {
         if (data) {
             var parsedData = JSON.parse(data.toString());
             if (parsedData) {
-                callback(err, parsedData.locations);
+                callback(err, parsedData);
             }
         }
     });
 };
 
+var hitCountMap = {};
+
 ships.isHit = function (gameId, coordinate, callback) {
-    this.getShipsLocations(gameId, function (err, myGameLocations) {
-        if (_.indexOf(myGameLocations, coordinate) > -1) {
-            callback(err, true);
+    this.getShipsLocations(gameId, function (err, data) {
+        if (_.indexOf(data.locations, coordinate) > -1) {
+
+            if(! hitCountMap[gameId]) {
+                hitCountMap[gameId] = {count:0};
+            }
+            var count = hitCountMap[gameId].count;
+            count = count + 1;
+            hitCountMap[gameId].count = count;
+            callback(err, {hitOrMiss: true, win: (count === 14)});
         } else {
-            callback(err, false);
+            callback(err, {hitOrMiss: false, win: false});
         }
+    });
+};
+
+ships.saveGame = function (gameId, locations, shipsData) {
+    var data = {
+        gameId: gameId,
+        locations: locations,
+        shipsWithLocations: shipsData,
+        hitCount: 0
+    };
+    fs.writeFile('./server/data/' + gameId + '.json', JSON.stringify(data), function (err) {
+        if (err) {
+            return console.log(err);
+        }
+        console.log("initialized..    " + shipsLocations);
     });
 };
 
@@ -83,20 +107,6 @@ ships.newGame = function () {
     });
     this.saveGame(gameId, shipsLocations, shipsData);
     return gameId;
-};
-
-ships.saveGame = function (gameId, locations, shipsData) {
-    var data = {
-        gameId: gameId,
-        locations: locations,
-        shipsWithLocations: shipsData
-    };
-    fs.writeFile('./server/data/' + gameId + '.json', JSON.stringify(data), function (err) {
-        if (err) {
-            return console.log(err);
-        }
-        console.log("initialized..    " + shipsLocations);
-    });
 };
 
 convertToString = function (locNumber) {
