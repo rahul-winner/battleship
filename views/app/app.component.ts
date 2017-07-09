@@ -8,15 +8,16 @@ import { ShipService } from './ships/ships.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnDestroy {
-  title = 'Battleship';
+  title = 'Find the Ships';
 
   boardWidth = 10;
   boardHeight = 10;
   shipsData: any;
+  readonly = false;
 
   private subscriptionsList: Array<Subscription> = [];
   constructor(private shipService: ShipService, private changeDetectionRef: ChangeDetectorRef) {
-
+    this.readonly = this.shipService.isReadOnly();
   }
 
   ngOnDestroy(): void {
@@ -27,6 +28,7 @@ export class AppComponent implements OnDestroy {
 
   startNewGame() {
     this.subscriptionsList.push(this.shipService.startNew().subscribe(res => {
+      this.readonly = false;
       this.shipsData = [];
       return res;
     }));
@@ -34,6 +36,7 @@ export class AppComponent implements OnDestroy {
 
   looseGame() {
     this.subscriptionsList.push(this.shipService.looseGameAndGetShips().subscribe(res => {
+      this.readonly = true;
       this.shipsData = res;
     }));
   }

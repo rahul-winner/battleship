@@ -6,11 +6,12 @@
   <div class="row">
     <div class="col-xs-4">
       <div style="display:flex">
-        <div><button type="button" (click)="startNewGame()" class="btn">New Game</button></div>
-        <div><button type="button" (click)="looseGame()" class="btn" style="margin-left:2rem">I Loose</button></div>
+        <div><button type="button" role="button" (click)="startNewGame()" class="btn btn-primary">New Game</button></div>
+        <div><button type="button" role="button" (click)="looseGame()" class="btn btn-primary" style="margin-left:2rem">I Loose</button></div>
       </div>
     </div>
   </div>
+  <hr/>
   <div class="row">
     <div class="col-xs-8 col-lg-4">
       <table class="table table-bordered">
@@ -25,11 +26,12 @@
         <tbody>
           <tr *ngFor="let r of ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']">
             <td>{{r}}</td>
-            <td *ngFor="let col of [1,2,3,4,5,6,7,8,9,10]" 
+            <td *ngFor="let col of [1,2,3,4,5,6,7,8,9,10]" role="button" 
                 appMark
                 [row]="r"
                 [col]="col"
                 [shipsKnownLocations]="shipsData"
+                [readonly]="readonly"
                 class="board-cell">
             </td>
           </tr>
